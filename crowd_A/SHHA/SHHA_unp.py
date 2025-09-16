@@ -5,6 +5,7 @@ import numpy as np
 from torch.utils.data import Dataset
 from PIL import Image
 import cv2
+import json
 import glob
 # import scipy.io as io
 import scipy.io
@@ -42,10 +43,10 @@ class SHHA_unsup(Dataset):
 
         if self.train:
             img_path = self.root_path + 'train_data/images/' + self.img_list[index]
-            gt_path = self.root_path + 'train_data/ground-truth/' + 'GT_' + self.img_list[index].split('.jpg')[0] + '.mat'
+            gt_path = self.root_path + 'train_data/ground_truth/' + 'GT_' + self.img_list[index].split('.jpg')[0] + '.json'
         else:
             img_path = self.root_path + 'test_data/images/' + 'IMG_' + str(index + 1) + '.jpg'
-            gt_path = self.root_path + 'test_data/ground-truth/' + 'GT_IMG_' + str(index + 1) + '.mat'
+            gt_path = self.root_path + 'test_data/ground_truth/' + 'GT_IMG_' + str(index + 1) + '.json'
 
 
         # load image and ground truth
@@ -97,8 +98,19 @@ def load_data(img_gt_path, train):
     img = cv2.imread(img_path)
     img = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
     # load ground truth points
-    mat = scipy.io.loadmat(gt_path)
-    points = mat['image_info'][0][0][0][0][0]
+    # mat = scipy.io.loadmat(gt_path)
+
+    json_path = img_path.replace('.jpg', '.json').replace('images', 'ground_truth')
+    with open(json_path, 'r') as f:
+        mat = json.load(f)
+
+    points = []
+    for item in mat['shapes']:
+        points.extend(item['points'])
+
+    points = np.array(points)
+
+    # points = mat['image_info'][0][0][0][0][0]
 
     return img, points
 

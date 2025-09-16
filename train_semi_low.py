@@ -28,7 +28,7 @@ def get_args_parser():
     parser = argparse.ArgumentParser('Set parameters for training P2PNet', add_help=False)
     parser.add_argument('--lr', default=1e-4, type=float)
     parser.add_argument('--lr_backbone', default=1e-5, type=float)
-    parser.add_argument('--batch_size', default=1, type=int)
+    parser.add_argument('--batch_size', default=8, type=int)
     parser.add_argument('--weight_decay', default=1e-4, type=float)
     parser.add_argument('--epochs', default=3500, type=int)
     parser.add_argument('--lr_drop', default=3500, type=int)
@@ -62,7 +62,7 @@ def get_args_parser():
 
     # dataset parameters
     parser.add_argument('--dataset_file', default='low') # high
-    parser.add_argument('--data_root', default='low',
+    parser.add_argument('--data_root', default='low/',
                         help='path where the dataset is')
     
     parser.add_argument('--output_dir', default='./res/low/logs',
@@ -83,10 +83,10 @@ def get_args_parser():
     parser.add_argument('--gpu_id', default=0, type=int, help='the gpu used for training')
     parser.add_argument('--confi_weight', default=1.0, type = float)
     parser.add_argument('--label_pro',type=str, default='10')
-    parser.add_argument('--un_weight', default=1.0, type = float)
+    parser.add_argument('--un_weight', default=0.3, type = float)
 
     parser.add_argument('--in_epoch',type=int, default=10)
-    parser.add_argument('--end_pro',type=float, default=0.5)
+    parser.add_argument('--end_pro',type=float, default=0.4)
     parser.add_argument('--engine_type', type = str, default = 'type_0')
     return parser
 
@@ -228,11 +228,11 @@ def main(args):
     unloading_data = build_dataset_unsup(args=args)
     # create the training and valiation set
     if args.label_pro == '10':
-        i_list = 'label_list/sha-10.txt'
+        i_list = 'label_list/low-10.txt'
     elif args.label_pro == '5':
-        i_list = 'label_list/sha-5.txt'
+        i_list = 'label_list/low-5.txt'
     elif args.label_pro == '40':
-        i_list = 'label_list/sha-40.txt'
+        i_list = 'label_list/low-40.txt'
 
     train_set, val_set = loading_data(args.data_root, i_list)
     untrain_set, _ = unloading_data(args.data_root, i_list)
@@ -434,7 +434,7 @@ if __name__ == '__main__':
 
 
     data_loader_t = torch.utils.data.DataLoader(
-        dataset_t_ik, batch_size=1,
+        dataset_t_ik, batch_size=8,
         sampler=t_sampler, num_workers=15)  
 
     train_dict = {}

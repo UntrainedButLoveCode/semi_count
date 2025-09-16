@@ -293,6 +293,7 @@ class P2PNet_confi_1(nn.Module):
 
     def forward(self, samples: NestedTensor):
         # get the backbone features
+        print("min:",samples.min().item(),"max:",samples.max().item(),"mean:",samples.mean().item())
         features = self.backbone(samples)
         # forward the feature pyramid
         features_fpn = self.fpn([features[1], features[2], features[3]])
